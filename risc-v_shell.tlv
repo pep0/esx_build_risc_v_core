@@ -45,15 +45,22 @@
    
    
    // Program Counter
+   // ---------------
+
    $pc[31:0] = >>1$next_pc[31:0];
    $next_pc[31:0] = $reset ? 32'b0 : $pc + 4;
 
    // Instruction Memory
+   // ------------------
+
    $addr[31:0] = $pc;
    $instr[31:0] = $read_data[31:0];
    `READONLY_MEM($addr, $$read_data[31:0]);
 
    // Decoder Logic
+   // -------------
+
+   // Decode Instruction Type 
    $is_u_instr = $instr[6:2] ==? 5'b0x101;
 
    $is_i_instr = $instr[6:2] ==? 5'b0000x ||
@@ -69,6 +76,16 @@
    $is_b_instr = $instr[6:2] ==? 5'b11000;
 
    $is_j_instr = $instr[6:2] ==? 5'b11011;
+
+   // Extract fields
+
+   $rs2[4:0] = $instr[24:20];
+   $rs1[4:0] = $instr[19:15];
+   $rd[4:0] = $instr[11:7];
+   $opcode[6:0] = $instr[6:0];
+   $funct3[2:0] = $instr[14:12];
+   $funct7[6:0] = $instr[31:25];
+
 
    // Assert these to end simulation (before Makerchip cycle limit).
    *passed = 1'b0;
