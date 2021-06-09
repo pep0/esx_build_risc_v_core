@@ -27,6 +27,8 @@
    $pc[31:0] = >>1$next_pc[31:0];
    $next_pc[31:0] = $reset ? 32'b0 :
                     $taken_br ? $br_tgt_pc :
+                    $is_jal ? $br_tgt_pc :
+                    $is_jalr ? $jalr_tgt_pc :
                     $pc + 4;
 
    // Instruction Memory
@@ -199,6 +201,11 @@
                1'b0;
    
    $br_tgt_pc[31:0] = $pc + $imm;
+
+   // Jump logic
+   // ----------
+
+   $jalr_tgt_pc[31:0] = $src1_value + $imm;
 
    //m4+dmem(32, 32, $reset, $addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $rd_data)
    m4+cpu_viz()
