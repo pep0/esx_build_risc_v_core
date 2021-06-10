@@ -187,7 +187,9 @@
       $is_s_instr ? $src1_value + $imm :
          32'b0;
    
-   $dest_data[31:0] = $result;
+   // if it is a load instruction write read memory data to register
+   // else it should take the result from the ALU.
+   $dest_data[31:0] = $is_load ? $ld_data : $result;
 
 
    // Branching
@@ -220,7 +222,7 @@
    $rd_en = $is_load;
 
 
-   m4+dmem(32, 32, $reset, $mem_addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $rd_data[31:0])
+   m4+dmem(32, 32, $reset, $mem_addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $ld_data[31:0])
    m4+cpu_viz()
 \SV
    endmodule
