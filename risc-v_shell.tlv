@@ -183,6 +183,8 @@
                   {31'b0, $src1_value[31]} ) :
       $is_sra ? $sra_rslt[31:0] :
       $is_srai ? $srai_rslt[31:0] :
+      $is_load ? $src1_value + $imm :
+      $is_s_instr ? $src1_value + $imm :
          32'b0;
    
    $dest_data[31:0] = $result;
@@ -190,7 +192,6 @@
 
    // Branching
    // ---------
-
 
    $taken_br = $is_beq ? $src1_value == $src2_value :
                $is_bne ? $src1_value != $src2_value :
@@ -202,12 +203,24 @@
    
    $br_tgt_pc[31:0] = $pc + $imm;
 
+
    // Jump logic
    // ----------
 
    $jalr_tgt_pc[31:0] = $src1_value + $imm;
 
-   //m4+dmem(32, 32, $reset, $addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $rd_data)
+
+   // Addressing Memory
+   // -----------------
+
+
+   $mem_addr[4:0] = $result[6:2];
+   $wr_en = $is_s_instr;
+   $wr_data[31:0] = $src2_value;
+   $rd_en = $is_load;
+
+
+   m4+dmem(32, 32, $reset, $mem_addr[4:0], $wr_en, $wr_data[31:0], $rd_en, $rd_data[31:0])
    m4+cpu_viz()
 \SV
    endmodule
